@@ -20,7 +20,7 @@ jobs:
       - name: docker build
         id: docker-build
         run: |
-          docker build . -t dandonghukim/:${{ github.sha }}
+          docker build . -t dandonghukim/jet-movie-msa-ui:${{ github.sha }}
       - name: docker push
         id: docker-push
         run: |
