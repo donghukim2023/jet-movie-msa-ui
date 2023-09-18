@@ -1,0 +1,27 @@
+name: deploy movie people app
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: docker build
+        id: docker-build
+        run: |
+          docker build . -t dandonghukim/:${{ github.sha }}
+      - name: docker push
+        id: docker-push
+        run: |
+          docker push dandonghukim/jet-movie-msa-ui:${{ github.sha }}
