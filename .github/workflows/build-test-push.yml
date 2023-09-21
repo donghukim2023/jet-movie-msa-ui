@@ -9,22 +9,28 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
+      OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
+      OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
+      OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+      OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v1
+      - name: Log into OCIR
+        uses: oracle-actions/login-ocir@v1.2.1
+        id: login-ocir
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          auth_token: ${{ secrets.OCI_AUTH_TOKEN }}
       - name: docker build
         id: docker-build
         run: |
-          docker build . -t dandonghukim/jet-movie-msa-ui:${{ github.sha }}
+          docker build . -t icn.ocir.io/axlpeslmb1ng/movie/jet-movie-msa-ui:${{ github.sha }}
       - name: docker push
         id: docker-push
         run: |
-          docker push dandonghukim/jet-movie-msa-ui:${{ github.sha }}
+          docker push icn.ocir.io/axlpeslmb1ng/movie/jet-movie-msa-ui:${{ github.sha }}
       - name: Checkout K8s Manifest
         uses: actions/checkout@v4
         with:
@@ -34,7 +40,7 @@ jobs:
       - name: Change config repo manifest
         uses: mikefarah/yq@master
         with:
-          cmd: yq -i '.spec.template.spec.containers.[0].image = "dandonghukim/jet-movie-msa-ui:${{ github.sha }}"' kube-jet-movie-msa-ui-deployment.yml
+          cmd: yq -i '.spec.template.spec.containers.[0].image = "icn.ocir.io/axlpeslmb1ng/movie/jet-movie-msa-ui:${{ github.sha }}"' kube-jet-movie-msa-ui-deployment.yml
       - name: Pushes to config repository
         run: |
           git add .
