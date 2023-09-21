@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
         with:
@@ -25,3 +25,20 @@ jobs:
         id: docker-push
         run: |
           docker push dandonghukim/jet-movie-msa-ui:${{ github.sha }}
+      - name: Checkout K8s Manifest
+        uses: actions/checkout@v4
+        with:
+          repository: donghukim2023/movie-k8s-manifest-repo
+          path: .
+          token: ${{ secrets.GIT_REPOPAT }}
+      - name: Change config repo manifest
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq -i '.spec.template.spec.containers.[0].image = "dandonghukim/jet-movie-msa-ui:${{ github.sha }}"' kube-jet-movie-msa-ui-deployment.yml
+      - name: Pushes to config repository
+        run: |
+          git add .
+          git config --global user.email "dan.donghu.kim@gmail.com"
+          git config --global user.name "donghukim2023"
+          git commit -am "..Change Image version to ${{ github.sha }}"
+          git push
