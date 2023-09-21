@@ -40,5 +40,5 @@ jobs:
           git add .
           git config --global user.email "dan.donghu.kim@gmail.com"
           git config --global user.name "donghukim2023"
-          git commit -am "..Change Image version to ${{ github.sha }}"
+          git commit -am "Change Image version to ${{ github.sha }}"
           git push
