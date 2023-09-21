@@ -77,7 +77,7 @@ define(['ojs/ojcore', 'knockout', 'ojs/ojmodule-element-utils', 'ojs/ojmodule-el
 
       // Header
       // Application Name used in Branding Area
-      self.appName = ko.observable("Movie (Ver 1.1)");
+      self.appName = ko.observable("Movie (Ver 1.0)");
       // User Info used in Global Navigation area
       self.userLogin = ko.observable("moviemaker@oracle.com");
 
